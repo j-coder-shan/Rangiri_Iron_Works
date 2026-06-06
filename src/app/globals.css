@@ -1,0 +1,164 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand color definitions (maps to bg-iron, text-spark, border-steel, etc.) */
+  --color-iron: #1A1A1A;
+  --color-iron-mid: #2D2D2D;
+  --color-iron-light: #3D3D3D;
+  --color-steel: #6B7280;
+  --color-steel-light: #9CA3AF;
+  
+  --color-spark: #E8500A;
+  --color-spark-light: #FF6B2B;
+  --color-spark-glow: rgba(232, 80, 10, 0.15);
+  
+  --color-ash: #F5F4F2;
+  --color-ash-dark: #E8E6E1;
+  --color-smoke: #FAFAF9;
+  
+  /* Fonts mapped from CSS variables output by next/font/google */
+  --font-display: var(--font-oswald), sans-serif;
+  --font-body: var(--font-source-sans), sans-serif;
+  --font-sinhala: var(--font-noto-sinhala), sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
+  
+  /* Custom animation declarations */
+  --animate-forge-glow: forge-glow 3s ease-in-out infinite;
+  --animate-spark-float-1: spark-float-1 6s linear infinite;
+  --animate-spark-float-2: spark-float-2 8s linear infinite;
+  --animate-spark-float-3: spark-float-3 7s linear infinite;
+
+  @keyframes forge-glow {
+    0%, 100% {
+      filter: drop-shadow(0 0 4px rgba(232, 80, 10, 0.3)) drop-shadow(0 0 10px rgba(232, 80, 10, 0.15));
+    }
+    50% {
+      filter: drop-shadow(0 0 16px rgba(232, 80, 10, 0.75)) drop-shadow(0 0 30px rgba(232, 80, 10, 0.4));
+    }
+  }
+
+  @keyframes spark-float-1 {
+    0% {
+      transform: translate(0, 100px) scale(0.2);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.8;
+    }
+    90% {
+      opacity: 0.6;
+    }
+    100% {
+      transform: translate(-100px, -105vh) scale(1.2) rotate(45deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes spark-float-2 {
+    0% {
+      transform: translate(0, 100px) scale(0.3);
+      opacity: 0;
+    }
+    15% {
+      opacity: 0.9;
+    }
+    85% {
+      opacity: 0.7;
+    }
+    100% {
+      transform: translate(120px, -105vh) scale(1.5) rotate(-30deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes spark-float-3 {
+    0% {
+      transform: translate(0, 100px) scale(0.1);
+      opacity: 0;
+    }
+    5% {
+      opacity: 0.7;
+    }
+    95% {
+      opacity: 0.4;
+    }
+    100% {
+      transform: translate(40px, -105vh) scale(0.9) rotate(90deg);
+      opacity: 0;
+    }
+  }
+}
+
+/* Custom CSS utilities */
+@utility bg-mesh {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-position: center;
+}
+
+@utility bg-mesh-light {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-position: center;
+}
+
+/* Scrollbar customizations */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1A1A1A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3D3D3D;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #E8500A;
+}
+
+/* Base style resets */
+body {
+  background-color: var(--color-iron);
+  color: #FAFAF9;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Custom inputs styling */
+input, textarea, select {
+  outline: none;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: #E8500A;
+  box-shadow: 0 0 0 2px rgba(232, 80, 10, 0.2);
+}
+
+/* Hide markdown editor default shadows/borders for brand integration */
+.w-md-editor {
+  box-shadow: none !important;
+  border: 1px solid #3D3D3D !important;
+  background-color: #2D2D2D !important;
+  color: #FAFAF9 !important;
+}
+.w-md-editor-toolbar {
+  background-color: #1A1A1A !important;
+  border-bottom: 1px solid #3D3D3D !important;
+}
+.w-md-editor-content {
+  background-color: #2D2D2D !important;
+}
+.w-md-editor-text-input {
+  color: #FAFAF9 !important;
+}
+.w-md-editor-preview {
+  color: #FAFAF9 !important;
+  border-left: 1px solid #3D3D3D !important;
+}
