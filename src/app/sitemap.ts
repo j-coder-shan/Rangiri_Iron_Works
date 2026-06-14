@@ -1,6 +1,23 @@
 import { MetadataRoute } from 'next';
 import { getCategories, getBlogPosts } from '@/lib/db';
 
+function parseSafeDate(dateVal: any): Date {
+  if (!dateVal) return new Date();
+  
+  // Handle Firestore Timestamp object
+  if (typeof dateVal === 'object' && typeof dateVal.toDate === 'function') {
+    return dateVal.toDate();
+  }
+  
+  // Handle serialized Firestore Timestamp object (seconds/nanoseconds)
+  if (typeof dateVal === 'object' && 'seconds' in dateVal) {
+    return new Date(dateVal.seconds * 1000);
+  }
+  
+  const parsed = new Date(dateVal);
+  return isNaN(parsed.getTime()) ? new Date() : parsed;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://rangiri.lk';
 
@@ -30,7 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .filter((cat) => cat.isActive)
       .map((cat) => ({
         url: `${siteUrl}/services/${cat.slug}`,
-        lastModified: new Date(),
+        lastModified: parseSafeDate(cat.createdAt),
         changeFrequency: 'weekly' as const,
         priority: 0.7,
       }));
@@ -46,7 +63,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .filter((post) => post.isPublished)
       .map((post) => ({
         url: `${siteUrl}/blog/${post.slug}`,
-        lastModified: post.publishedAt ? new Date(post.publishedAt) : new Date(post.createdAt || Date.now()),
+        lastModified: parseSafeDate(post.publishedAt || post.createdAt),
         changeFrequency: 'monthly' as const,
         priority: 0.6,
       }));
