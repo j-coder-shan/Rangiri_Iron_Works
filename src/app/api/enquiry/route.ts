@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { saveEnquiry } from '@/lib/db';
 import { isFirebaseConfigured } from '@/lib/firebase';
+import { sendWhatsAppNotification } from '@/lib/notifications';
 import { Enquiry } from '@/types';
 
 export async function POST(request: Request) {
@@ -17,6 +18,8 @@ export async function POST(request: Request) {
     // Save the enquiry server-side if Firestore is configured.
     if (isFirebaseConfigured) {
       await saveEnquiry(enquiryData as Enquiry);
+      // Trigger WhatsApp notification (server-side, non-blocking)
+      sendWhatsAppNotification(enquiryData).catch(console.error);
     }
 
     return NextResponse.json({ 

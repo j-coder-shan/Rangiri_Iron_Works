@@ -43,7 +43,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased bg-iron text-smoke min-h-screen flex flex-col">
+      <body className="font-body antialiased bg-iron text-smoke min-h-screen flex flex-col" suppressHydrationWarning>
         <AuthProvider>
           <LanguageProvider>
             <ToastProvider>
