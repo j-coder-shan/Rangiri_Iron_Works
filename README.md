@@ -4,6 +4,10 @@ Bilingual (Sinhala/English) business website, customer quotation desk, and admin
 
 This repository hosts a production-ready Next.js 15 application designed to run on a 100% free hosting stack (Vercel, Google Firebase, Cloudinary, and EmailJS) while providing a premium, high-performance, and responsive user experience.
 
+<p align="center">
+  <img src="public/qr-code.png" alt="Rangiri Iron Works Website QR Code" width="250" />
+</p>
+
 ---
 
 ## 📖 Table of Contents
