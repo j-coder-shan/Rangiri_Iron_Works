@@ -1,10 +1,11 @@
-// src/app/services/[categorySlug]/[itemCode]/page.tsx
 'use client';
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getOptimizedCloudinaryUrl } from '@/lib/cloudinary';
 import { getItemByCode, getItemsByCategory } from '@/lib/db';
 import { Item } from '@/types';
 import Badge from '@/components/ui/Badge';
@@ -32,6 +33,7 @@ export default function ItemDetailPage({ params }: PageProps) {
   const [activeImage, setActiveImage] = useState('');
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
 
   useEffect(() => {
     async function loadData() {
@@ -58,6 +60,19 @@ export default function ItemDetailPage({ params }: PageProps) {
     }
     loadData();
   }, [itemCode, categorySlug]);
+
+  useEffect(() => {
+    if (item) {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'https://rangiri.lk');
+      const canonicalUrl = `${siteUrl}/item/${item.code}`;
+      
+      import('qrcode').then((QRCode) => {
+        QRCode.toDataURL(canonicalUrl, { width: 120, margin: 1 })
+          .then(url => setQrCodeUrl(url))
+          .catch(err => console.error('QR code generation failed', err));
+      }).catch(err => console.error('Failed to load qrcode package', err));
+    }
+  }, [item]);
 
   // Copy item code to clipboard
   const handleCopyCode = () => {
@@ -144,10 +159,12 @@ export default function ItemDetailPage({ params }: PageProps) {
             
             {/* Large Active Image display */}
             <div className="relative h-[300px] sm:h-[450px] rounded-lg overflow-hidden bg-iron-mid border border-iron-light/40 shadow-xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={activeImage}
+              <Image
+                src={getOptimizedCloudinaryUrl(activeImage, 800)}
                 alt={t(item.nameEn, item.nameSi)}
+                width={800}
+                height={600}
+                priority
                 className="w-full h-full object-cover transition-all duration-300"
               />
               {/* Monospace Code Badge Overlay */}
@@ -167,8 +184,13 @@ export default function ItemDetailPage({ params }: PageProps) {
                       activeImage === imgUrl ? 'border-spark' : 'border-iron-light/40 opacity-70 hover:opacity-100'
                     }`}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={imgUrl} alt="thumbnail" className="w-full h-full object-cover" />
+                    <Image
+                      src={getOptimizedCloudinaryUrl(imgUrl, 160)}
+                      alt="thumbnail"
+                      width={80}
+                      height={80}
+                      className="w-full h-full object-cover"
+                    />
                   </button>
                 ))}
               </div>
@@ -298,6 +320,27 @@ export default function ItemDetailPage({ params }: PageProps) {
                 </a>
               </div>
 
+              {/* QR Code Section */}
+              {qrCodeUrl && (
+                <div className="p-4 bg-iron-mid/50 border border-iron-light/40 rounded-lg flex items-center gap-4 mt-6">
+                  <div className="bg-white p-1 rounded-md flex-shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={qrCodeUrl} alt="QR Code" className="w-20 h-20" />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="block text-[10px] font-bold text-spark uppercase tracking-wider">
+                      {t('Share this item', 'මෙම අයිතමය බෙදාගන්න')}
+                    </span>
+                    <p className="text-xs text-steel-light leading-relaxed">
+                      {t(
+                        'Scan to share this item',
+                        'මෙම අයිතමය බෙදාගැනීමට QR කේතය ස්කෑන් කරන්න'
+                      )}
+                    </p>
+                  </div>
+                </div>
+              )}
+
             </div>
           </div>
 
@@ -321,10 +364,11 @@ export default function ItemDetailPage({ params }: PageProps) {
                 >
                   {/* Thumbnail */}
                   <div className="relative h-40 bg-iron overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={relItem.images[0] || 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80'}
+                    <Image
+                      src={getOptimizedCloudinaryUrl(relItem.images[0] || 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80', 400)}
                       alt={t(relItem.nameEn, relItem.nameSi)}
+                      width={400}
+                      height={300}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute top-3 left-3">

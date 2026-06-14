@@ -1,17 +1,15 @@
 // src/app/admin/categories/page.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { getCategories, deleteCategory, saveCategory, getItems } from '@/lib/db';
 import { Category } from '@/types';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
-import Badge from '@/components/ui/Badge';
 import Skeleton from '@/components/ui/Skeleton';
 import { useToast } from '@/components/ui/Toast';
-import { PlusCircle, Edit, Trash2, FolderOpen, ArrowUpDown } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, FolderOpen } from 'lucide-react';
 import * as Icons from 'lucide-react';
 
 export default function AdminCategoriesPage() {
@@ -22,7 +20,7 @@ export default function AdminCategoriesPage() {
   const [itemsCountMap, setItemsCountMap] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const cats = await getCategories();
       const items = await getItems();
@@ -40,11 +38,11 @@ export default function AdminCategoriesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showError]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   // Toggle category active status directly from table
   const handleToggleActive = async (cat: Category) => {

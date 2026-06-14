@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getBlogPosts } from '@/lib/db';
@@ -9,6 +10,7 @@ import { BlogPost } from '@/types';
 import Card from '@/components/ui/Card';
 import Skeleton from '@/components/ui/Skeleton';
 import Button from '@/components/ui/Button';
+import { getOptimizedCloudinaryUrl } from '@/lib/cloudinary';
 import { ArrowRight, Calendar, ArrowRightCircle } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -99,14 +101,14 @@ export default function BlogPreview() {
               >
                 {/* Cover Image */}
                 <div className="relative h-44 overflow-hidden bg-iron">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={post.coverImage}
+                  <Image
+                    src={getOptimizedCloudinaryUrl(post.coverImage, 400)}
                     alt={t(post.titleEn, post.titleSi)}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-iron-mid/90 via-iron-mid/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-iron-mid/90 via-iron-mid/20 to-transparent z-10" />
                 </div>
 
                 {/* Content details */}

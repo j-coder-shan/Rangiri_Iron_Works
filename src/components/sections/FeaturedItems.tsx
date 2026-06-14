@@ -3,8 +3,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getItems } from '@/lib/db';
+import { getOptimizedCloudinaryUrl } from '@/lib/cloudinary';
 import { Item } from '@/types';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
@@ -90,10 +92,12 @@ export default function FeaturedItems() {
               >
                 {/* Thumbnail Image */}
                 <div className="relative h-48 overflow-hidden bg-iron">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={item.images[0] || 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80'}
+                  <Image
+                    src={getOptimizedCloudinaryUrl(item.images[0] || 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80', 400)}
                     alt={t(item.nameEn, item.nameSi)}
+                    width={400}
+                    height={300}
+                    sizes="(max-width: 640px) 100vw, 340px"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   

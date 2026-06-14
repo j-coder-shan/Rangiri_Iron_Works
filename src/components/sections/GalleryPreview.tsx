@@ -3,11 +3,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getGallery } from '@/lib/db';
 import { GalleryPhoto } from '@/types';
 import Button from '@/components/ui/Button';
 import Skeleton from '@/components/ui/Skeleton';
+import { getOptimizedCloudinaryUrl } from '@/lib/cloudinary';
 import { ArrowRight, Image as ImageIcon } from 'lucide-react';
 
 export default function GalleryPreview() {
@@ -101,12 +103,13 @@ export default function GalleryPreview() {
                 className="relative h-48 sm:h-56 rounded-lg overflow-hidden group cursor-pointer border border-iron-light/20 shadow-md"
               >
                 {/* Image */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={photo.imageUrl}
+                <Image
+                  src={getOptimizedCloudinaryUrl(photo.imageUrl, 400)}
                   alt={t(photo.captionEn, photo.captionSi)}
+                  width={400}
+                  height={300}
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
                 />
                 
                 {/* Overlay on Hover */}

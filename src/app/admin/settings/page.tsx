@@ -1,20 +1,59 @@
 // src/app/admin/settings/page.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { getSettings, saveSettings } from '@/lib/db';
+import React, { useState, useEffect, useCallback } from 'react';
+import { getSettings, saveSettings, seedProductionDatabase } from '@/lib/db';
 import { SiteSettings } from '@/types';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Skeleton from '@/components/ui/Skeleton';
 import { useToast } from '@/components/ui/Toast';
-import { Save, Phone, MessageSquare, Mail, MapPin, Clock, Facebook, Youtube, Sparkles, Layout } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Save, Phone, MapPin, Facebook, Layout, Database, RotateCcw } from 'lucide-react';
 
 export default function AdminSettingsPage() {
   const { success: showSuccess, error: showError } = useToast();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [seeding, setSeeding] = useState(false);
+  const { isMock } = useAuth();
+
+  const handleSeedDatabase = async () => {
+    if (isMock) {
+      if (confirm('Are you sure you want to reset the mock database? All local updates to categories, items, and settings will be replaced with default seed data.')) {
+        setSeeding(true);
+        try {
+          localStorage.removeItem('riw_categories');
+          localStorage.removeItem('riw_items');
+          localStorage.removeItem('riw_enquiries');
+          localStorage.removeItem('riw_testimonials');
+          localStorage.removeItem('riw_blog_posts');
+          localStorage.removeItem('riw_settings');
+          localStorage.removeItem('riw_gallery');
+          await loadSettings();
+          showSuccess('Mock database has been reset and seeded successfully!');
+        } catch {
+          showError('Failed to reset mock database');
+        } finally {
+          setSeeding(false);
+        }
+      }
+    } else {
+      if (confirm('This will seed the default categories, 60 service items, testimonials, site settings, blog posts, and gallery photos into your live Firestore database. Existing records will NOT be overwritten. Proceed?')) {
+        setSeeding(true);
+        try {
+          await seedProductionDatabase();
+          await loadSettings();
+          showSuccess('Firestore production database seeded successfully!');
+        } catch (err: any) {
+          showError(err.message || 'Failed to seed database');
+        } finally {
+          setSeeding(false);
+        }
+      }
+    }
+  };
 
   // Form states
   const [phone, setPhone] = useState('');
@@ -31,31 +70,32 @@ export default function AdminSettingsPage() {
   const [heroSubtitleEn, setHeroSubtitleEn] = useState('');
   const [heroSubtitleSi, setHeroSubtitleSi] = useState('');
 
+  const loadSettings = useCallback(async () => {
+    try {
+      const s = await getSettings();
+      setPhone(s.phone || '');
+      setWhatsapp(s.whatsapp || '');
+      setEmail(s.email || '');
+      setAddressEn(s.addressEn || '');
+      setAddressSi(s.addressSi || '');
+      setWorkingHoursEn(s.workingHoursEn || '');
+      setWorkingHoursSi(s.workingHoursSi || '');
+      setFacebookUrl(s.facebookUrl || '');
+      setYoutubeUrl(s.youtubeUrl || '');
+      setHeroTitleEn(s.heroTitleEn || '');
+      setHeroTitleSi(s.heroTitleSi || '');
+      setHeroSubtitleEn(s.heroSubtitleEn || '');
+      setHeroSubtitleSi(s.heroSubtitleSi || '');
+    } catch {
+      showError('Failed to load settings');
+    } finally {
+      setLoading(false);
+    }
+  }, [showError]);
+
   useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const s = await getSettings();
-        setPhone(s.phone || '');
-        setWhatsapp(s.whatsapp || '');
-        setEmail(s.email || '');
-        setAddressEn(s.addressEn || '');
-        setAddressSi(s.addressSi || '');
-        setWorkingHoursEn(s.workingHoursEn || '');
-        setWorkingHoursSi(s.workingHoursSi || '');
-        setFacebookUrl(s.facebookUrl || '');
-        setYoutubeUrl(s.youtubeUrl || '');
-        setHeroTitleEn(s.heroTitleEn || '');
-        setHeroTitleSi(s.heroTitleSi || '');
-        setHeroSubtitleEn(s.heroSubtitleEn || '');
-        setHeroSubtitleSi(s.heroSubtitleSi || '');
-      } catch {
-        showError('Failed to load settings');
-      } finally {
-        setLoading(false);
-      }
-    };
     loadSettings();
-  }, []);
+  }, [loadSettings]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -360,6 +400,38 @@ export default function AdminSettingsPage() {
         </div>
 
       </form>
+
+      {/* Database Seeding Utility Section */}
+      <div className="pt-6 border-t border-gray-200">
+        <Card variant="light" className="p-6 sm:p-8 border border-gray-100 shadow-md space-y-4">
+          <div className="flex items-center gap-2 text-gray-900 border-b border-gray-100 pb-3">
+            <Database size={16} className="text-[#E8500A]" />
+            <h3 className="font-display font-bold uppercase tracking-wider text-xs">
+              {isMock ? 'Mock Database Utilities' : 'Production Database Initializer'}
+            </h3>
+          </div>
+          <div className="space-y-4">
+            <p className="text-xs text-gray-500 leading-relaxed">
+              {isMock 
+                ? 'Reset and re-seed your local mock sandbox environment. This clears all modifications in localStorage and restores the original 6 categories, 60 service items, testimonials, site settings, blog posts, and gallery photos.'
+                : 'Deploy initial setup seed data directly into your connected Cloud Firestore database. This writes the default 6 categories, 60 service items (with thematic images), testimonials, blog posts, and site settings. Existing records will not be overwritten.'
+              }
+            </p>
+            <div className="flex justify-start">
+              <Button
+                type="button"
+                variant={isMock ? 'outline' : 'spark'}
+                loading={seeding}
+                onClick={handleSeedDatabase}
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider py-2.5 px-6"
+              >
+                {isMock ? <RotateCcw size={14} /> : <Database size={14} />}
+                <span>{isMock ? 'Reset & Re-seed Mock Data' : 'Seed Live Database'}</span>
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </div>
 
     </div>
   );

@@ -2,14 +2,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getBlogPosts } from '@/lib/db';
 import { BlogPost } from '@/types';
 import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
 import Skeleton from '@/components/ui/Skeleton';
-import { Calendar, Search, BookOpen, Clock } from 'lucide-react';
+import { getOptimizedCloudinaryUrl } from '@/lib/cloudinary';
+import { Calendar, BookOpen, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function BlogListingPage() {
@@ -137,17 +138,17 @@ export default function BlogListingPage() {
               >
                 {/* Cover Photo */}
                 <div className="relative h-48 overflow-hidden bg-iron flex-shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={post.coverImage}
+                  <Image
+                    src={getOptimizedCloudinaryUrl(post.coverImage, 400)}
                     alt={t(post.titleEn, post.titleSi)}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-iron-mid/95 via-iron-mid/10 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-iron-mid/95 via-iron-mid/10 to-transparent z-10" />
                   
                   {/* Category tags overlay */}
-                  <div className="absolute top-4 left-4 flex flex-wrap gap-1">
+                  <div className="absolute top-4 left-4 flex flex-wrap gap-1 z-10">
                     {post.tags.slice(0, 2).map((t) => (
                       <span key={t} className="text-[9px] bg-iron/80 backdrop-blur-sm border border-iron-light/40 text-smoke font-bold tracking-wider px-2 py-0.5 rounded uppercase font-display">
                         {t}

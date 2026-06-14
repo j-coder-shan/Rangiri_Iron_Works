@@ -3,7 +3,6 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { saveCategory } from '@/lib/db';
 import { Category } from '@/types';
 import CategoryForm from '@/components/admin/CategoryForm';
@@ -13,7 +12,6 @@ import Link from 'next/link';
 
 export default function AdminNewCategoryPage() {
   const router = useRouter();
-  const { t } = useLanguage();
   const { success: showSuccessToast } = useToast();
 
   const handleFormSubmit = async (formData: Omit<Category, 'id' | 'createdAt'>) => {

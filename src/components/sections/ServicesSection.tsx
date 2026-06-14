@@ -2,12 +2,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getCategories } from '@/lib/db';
 import { Category } from '@/types';
 import Card from '@/components/ui/Card';
 import Skeleton from '@/components/ui/Skeleton';
+import { getOptimizedCloudinaryUrl } from '@/lib/cloudinary';
 import * as Icons from 'lucide-react';
 
 export default function ServicesSection() {
@@ -81,16 +83,17 @@ export default function ServicesSection() {
               >
                 {/* Cover Image */}
                 <div className="relative h-44 overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={cat.coverImage}
+                  <Image
+                    src={getOptimizedCloudinaryUrl(cat.coverImage, 400)}
                     alt={t(cat.nameEn, cat.nameSi)}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-iron-mid via-iron-mid/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-iron-mid via-iron-mid/20 to-transparent z-10" />
                   
                   {/* Floating Category Icon */}
-                  <div className="absolute bottom-4 left-4 bg-iron p-3 rounded-full border border-iron-light/40 shadow-lg">
+                  <div className="absolute bottom-4 left-4 bg-iron p-3 rounded-full border border-iron-light/40 shadow-lg z-10">
                     {renderIcon(cat.icon)}
                   </div>
                 </div>

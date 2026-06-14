@@ -13,7 +13,7 @@ import confetti from 'canvas-confetti';
 
 export default function ContactPage() {
   const { t } = useLanguage();
-  const { success: showSuccessToast, error: showErrorToast } = useToast();
+  const { error: showErrorToast } = useToast();
 
   // Contact Form Fields
   const [name, setName] = useState('');

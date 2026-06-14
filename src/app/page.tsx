@@ -11,8 +11,31 @@ import BlogPreview from '@/components/sections/BlogPreview';
 import CTASection from '@/components/sections/CTASection';
 
 export default function Home() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Rangiri Iron Works",
+    "alternateName": "රංගිරි යකඩ වැඩ",
+    "description": "Iron fabrication, vehicle painting and canopy workshop in Dambulla, Sri Lanka.",
+    "telephone": "+94723169847",
+    "email": "prabod.jay02@gmail.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Dambulla",
+      "addressCountry": "LK"
+    },
+    "url": "https://rangiri.lk",
+    "openingHours": "Mo-Sa 07:30-18:00"
+  };
+
   return (
     <>
+      {/* JSON-LD LocalBusiness Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* 1. Hero View with weld sparks */}
       <HeroSection />
 

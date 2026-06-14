@@ -23,6 +23,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Update HTML tag lang attribute dynamically
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = lang;
+    }
+  }, [lang]);
+
   const handleSetLang = (newLang: Language) => {
     setLang(newLang);
     localStorage.setItem('rangiri-lang', newLang);

@@ -1,16 +1,15 @@
 // src/app/admin/items/page.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { getItems, deleteItem, saveItem, getCategories } from '@/lib/db';
 import { Item, Category } from '@/types';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Skeleton from '@/components/ui/Skeleton';
 import { useToast } from '@/components/ui/Toast';
-import { PlusCircle, Edit, Trash2, Search, Filter, Sparkles, FolderOpen, SlidersHorizontal } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Search, Sparkles, FolderOpen, SlidersHorizontal } from 'lucide-react';
 
 export default function AdminItemsPage() {
   const router = useRouter();
@@ -26,7 +25,7 @@ export default function AdminItemsPage() {
   const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'active', 'inactive'
   const [featuredFilter, setFeaturedFilter] = useState('all'); // 'all', 'featured', 'standard'
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const allItems = await getItems();
       const allCats = await getCategories();
@@ -38,11 +37,11 @@ export default function AdminItemsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showError]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   const handleToggleActive = async (item: Item) => {
     try {

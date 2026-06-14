@@ -1,7 +1,7 @@
 // src/app/admin/gallery/page.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getGallery, saveGalleryPhoto, deleteGalleryPhoto, getCategories } from '@/lib/db';
 import { GalleryPhoto, Category } from '@/types';
 import Button from '@/components/ui/Button';
@@ -9,7 +9,7 @@ import Card from '@/components/ui/Card';
 import Modal from '@/components/ui/Modal';
 import Skeleton from '@/components/ui/Skeleton';
 import { useToast } from '@/components/ui/Toast';
-import { PlusCircle, Edit, Trash2, ImageIcon, Search, Save, X, Eye, Sparkles } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Search, Sparkles } from 'lucide-react';
 
 export default function AdminGalleryPage() {
   const { success: showSuccess, error: showError } = useToast();
@@ -34,7 +34,7 @@ export default function AdminGalleryPage() {
   const [isFeatured, setIsFeatured] = useState(false);
   const [order, setOrder] = useState(1);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const allPhotos = await getGallery();
       const allCats = await getCategories();
@@ -49,11 +49,11 @@ export default function AdminGalleryPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [categoryId, showError]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   const openAddModal = () => {
     setCurrentPhoto(null);

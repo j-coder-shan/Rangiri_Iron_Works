@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getBlogPostBySlug, getBlogPosts } from '@/lib/db';
@@ -11,6 +12,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Skeleton from '@/components/ui/Skeleton';
 import ReactMarkdown from 'react-markdown';
+import { getOptimizedCloudinaryUrl } from '@/lib/cloudinary';
 import { ChevronRight, ArrowLeft, Calendar, Share2, Clock, Hash, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/components/ui/Toast';
@@ -171,11 +173,13 @@ export default function BlogPostPage({ params }: PageProps) {
 
         {/* Full cover image */}
         <div className="relative h-64 sm:h-[400px] rounded-lg overflow-hidden border border-iron-light/40 shadow-2xl">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={post.coverImage}
+          <Image
+            src={getOptimizedCloudinaryUrl(post.coverImage, 1000)}
             alt={t(post.titleEn, post.titleSi)}
-            className="w-full h-full object-cover"
+            fill
+            sizes="(max-width: 1024px) 100vw, 1000px"
+            className="object-cover"
+            priority
           />
         </div>
 
@@ -240,11 +244,12 @@ export default function BlogPostPage({ params }: PageProps) {
                   onClick={() => router.push(`/blog/${relPost.slug}`)}
                 >
                   <div className="relative h-40 bg-iron overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={relPost.coverImage}
+                    <Image
+                      src={getOptimizedCloudinaryUrl(relPost.coverImage, 400)}
                       alt={t(relPost.titleEn, relPost.titleSi)}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      fill
+                      sizes="(max-width: 640px) 100vw, 50vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
 

@@ -1,7 +1,7 @@
 // src/lib/db.ts
 import { db, isFirebaseConfigured } from './firebase';
 import { 
-  collection, doc, getDocs, getDoc, setDoc, addDoc, 
+  collection, doc, getDocs, getDoc, setDoc, 
   updateDoc, deleteDoc, query, where, orderBy, limit 
 } from 'firebase/firestore';
 import { Category, Item, Enquiry, Testimonial, BlogPost, SiteSettings, GalleryPhoto } from '@/types';
@@ -431,3 +431,72 @@ export async function saveSettings(settings: SiteSettings): Promise<void> {
   if (!isClient) return;
   localStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
 }
+
+export async function seedProductionDatabase(): Promise<void> {
+  if (!isFirebaseConfigured || !db) {
+    throw new Error('Firebase is not configured. Seeding is only applicable for live Firebase databases.');
+  }
+
+  // 1. Seed Site Settings
+  const settingsRef = doc(db, 'siteSettings', 'main');
+  const settingsSnap = await getDoc(settingsRef);
+  if (!settingsSnap.exists()) {
+    await setDoc(settingsRef, defaultSettings);
+  }
+
+  // 2. Seed Categories
+  const categoriesSnap = await getDocs(collection(db, 'categories'));
+  if (categoriesSnap.empty) {
+    for (const cat of seedCategories) {
+      await setDoc(doc(db, 'categories', cat.id), cat);
+    }
+  }
+
+  // 3. Seed Items
+  const itemsSnap = await getDocs(collection(db, 'items'));
+  if (itemsSnap.empty) {
+    const items = generateSeedItems();
+    for (const item of items) {
+      await setDoc(doc(db, 'items', item.id), item);
+    }
+  }
+
+  // 4. Seed Testimonials
+  const testimonialsSnap = await getDocs(collection(db, 'testimonials'));
+  if (testimonialsSnap.empty) {
+    for (const t of seedTestimonials) {
+      await setDoc(doc(db, 'testimonials', t.id), t);
+    }
+  }
+
+  // 5. Seed Blogs
+  const blogsSnap = await getDocs(collection(db, 'blogPosts'));
+  if (blogsSnap.empty) {
+    for (const post of seedBlogPosts) {
+      await setDoc(doc(db, 'blogPosts', post.id), {
+        ...post,
+        publishedAt: new Date(post.publishedAt)
+      });
+    }
+  }
+
+  // 6. Seed Gallery
+  const gallerySnap = await getDocs(collection(db, 'gallery'));
+  if (gallerySnap.empty) {
+    const items = generateSeedItems();
+    const defaultGallery = items.slice(0, 18).map((item, index) => ({
+      id: `gal-${index}`,
+      categoryId: item.categoryId,
+      captionEn: item.nameEn,
+      captionSi: item.nameSi,
+      imageUrl: item.images[0],
+      isFeatured: index < 8,
+      order: index + 1,
+      createdAt: new Date(item.createdAt),
+    }));
+    for (const photo of defaultGallery) {
+      await setDoc(doc(db, 'gallery', photo.id), photo);
+    }
+  }
+}
+

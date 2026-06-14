@@ -2,11 +2,12 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getGallery } from '@/lib/db';
 import { GalleryPhoto } from '@/types';
-import Card from '@/components/ui/Card';
 import Skeleton from '@/components/ui/Skeleton';
+import { getOptimizedCloudinaryUrl } from '@/lib/cloudinary';
 import { ChevronLeft, ChevronRight, X, Image as ImageIcon, ZoomIn } from 'lucide-react';
 
 export default function GalleryPage() {
@@ -152,10 +153,12 @@ export default function GalleryPage() {
                 className="break-inside-avoid relative rounded-lg overflow-hidden border border-iron-light/20 shadow-md group cursor-pointer"
               >
                 {/* Image element */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={photo.imageUrl}
+                <Image
+                  src={getOptimizedCloudinaryUrl(photo.imageUrl, 400)}
                   alt={t(photo.captionEn, photo.captionSi)}
+                  width={400}
+                  height={300}
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   className="w-full h-auto object-cover group-hover:scale-[1.02] transition-transform duration-300"
                 />
 
@@ -210,11 +213,14 @@ export default function GalleryPage() {
 
             {/* Photo Wrapper */}
             <div className="max-w-4xl max-h-[70vh] flex flex-col items-center justify-center p-2 bg-iron-mid/10 rounded-md border border-iron-light/10 relative">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={filteredPhotos[currentIndex].imageUrl}
+              <Image
+                src={getOptimizedCloudinaryUrl(filteredPhotos[currentIndex].imageUrl, 1200)}
                 alt={t(filteredPhotos[currentIndex].captionEn, filteredPhotos[currentIndex].captionSi)}
-                className="max-w-full max-h-[68vh] object-contain rounded-md"
+                width={1200}
+                height={800}
+                priority
+                sizes="(max-width: 1200px) 100vw, 1200px"
+                className="max-w-full max-h-[68vh] w-auto h-auto object-contain rounded-md"
               />
             </div>
 

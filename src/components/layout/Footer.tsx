@@ -3,7 +3,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Logo from '@/components/Logo';
 import { Phone, Mail, Clock, MapPin, Facebook, Youtube } from 'lucide-react';
@@ -11,7 +11,6 @@ import { Phone, Mail, Clock, MapPin, Facebook, Youtube } from 'lucide-react';
 export default function Footer() {
   const { t } = useLanguage();
   const pathname = usePathname();
-  const router = useRouter();
 
   // Categories list matching Navbar
   const categoriesList = [

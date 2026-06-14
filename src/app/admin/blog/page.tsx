@@ -1,7 +1,7 @@
 // src/app/admin/blog/page.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getBlogPosts, deleteBlogPost, saveBlogPost } from '@/lib/db';
 import { BlogPost } from '@/types';
@@ -9,7 +9,7 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Skeleton from '@/components/ui/Skeleton';
 import { useToast } from '@/components/ui/Toast';
-import { PlusCircle, Edit, Trash2, BookOpen, Search, Sparkles, Calendar } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, BookOpen, Search, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function AdminBlogPage() {
@@ -20,7 +20,7 @@ export default function AdminBlogPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const data = await getBlogPosts();
       setPosts(data);
@@ -29,11 +29,11 @@ export default function AdminBlogPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showError]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   const handleTogglePublished = async (post: BlogPost) => {
     try {

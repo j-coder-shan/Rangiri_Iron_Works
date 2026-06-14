@@ -1,6 +1,5 @@
 // src/app/layout.tsx
 import type { Metadata } from 'next';
-import { Oswald, Source_Sans_3, Noto_Sans_Sinhala, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { AuthProvider } from '@/contexts/AuthContext';
@@ -8,35 +7,6 @@ import { ToastProvider } from '@/components/ui/Toast';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import WhatsAppFloatingButton from '@/components/layout/WhatsAppFloatingButton';
-
-const oswald = Oswald({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-oswald',
-  display: 'swap',
-});
-
-const sourceSans = Source_Sans_3({
-  subsets: ['latin'],
-  weight: ['300', '400', '600'],
-  style: ['normal', 'italic'],
-  variable: '--font-source-sans',
-  display: 'swap',
-});
-
-const notoAutolink = Noto_Sans_Sinhala({
-  subsets: ['sinhala'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-noto-sinhala',
-  display: 'swap',
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  weight: ['400', '600'],
-  variable: '--font-jetbrains-mono',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: {
@@ -63,7 +33,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="si" suppressHydrationWarning className={`${oswald.variable} ${sourceSans.variable} ${notoAutolink.variable} ${jetbrainsMono.variable}`}>
+    <html lang="si" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;1,400&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="font-body antialiased bg-iron text-smoke min-h-screen flex flex-col">
         <AuthProvider>
           <LanguageProvider>
@@ -81,3 +60,4 @@ export default function RootLayout({
     </html>
   );
 }
+

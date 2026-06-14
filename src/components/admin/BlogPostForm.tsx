@@ -6,7 +6,7 @@ import { BlogPost } from '@/types';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import { useToast } from '@/components/ui/Toast';
-import { Save, X, Info, Image as ImageIcon } from 'lucide-react';
+import { Save, X } from 'lucide-react';
 
 interface BlogPostFormProps {
   initialData?: BlogPost | null;

@@ -5,11 +5,12 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getCategories, getItemByCode, saveEnquiry, getEnquiries } from '@/lib/db';
+import { sendEmailNotification } from '@/lib/notifications';
 import { Category, Item, Enquiry, PreferredContact, Language } from '@/types';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { useToast } from '@/components/ui/Toast';
-import { CheckCircle2, MessageSquare, PhoneCall, Mail, Upload, X, ArrowLeft } from 'lucide-react';
+import { CheckCircle2, MessageSquare, Upload, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 // Main client form wrapper (wrapped in Suspense to support useSearchParams in Next.js)
@@ -32,6 +33,8 @@ function QuotationFormContent() {
   const [message, setMessage] = useState('');
   const [languagePreference, setLanguagePreference] = useState<Language>('si');
   const [attachments, setAttachments] = useState<string[]>([]);
+  const [website, setWebsite] = useState(''); // Honeypot field
+
   
   // Lookup states
   const [categories, setCategories] = useState<Category[]>([]);
@@ -179,8 +182,42 @@ function QuotationFormContent() {
         createdAt: new Date().toISOString(),
       };
 
-      // Save enquiry locally
-      await saveEnquiry(newEnquiry);
+      // Save enquiry via server-side API (which runs honeypot checks)
+      const response = await fetch('/api/enquiry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...newEnquiry,
+          website,
+        }),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Failed to submit enquiry');
+      }
+
+      // Save succeeded — send EmailJS notification client-side
+      const selectedCategory = categories.find(c => c.id === categoryId);
+      await sendEmailNotification({
+        referenceNumber: newRefNum,
+        customerName: customerName.trim(),
+        customerPhone: customerPhone.trim(),
+        customerEmail: customerEmail.trim(),
+        preferredContact,
+        categoryNameEn: selectedCategory?.nameEn || categoryId,
+        itemCode: itemCode.trim().toUpperCase(),
+        message: message.trim(),
+        language: languagePreference,
+      }).catch((err) => console.error('EmailJS notification failed:', err));
+
+      // If Firestore is NOT configured (mock mode), save locally on client
+      const { isFirebaseConfigured } = await import('@/lib/firebase');
+      if (!isFirebaseConfigured) {
+        await saveEnquiry(newEnquiry);
+      }
       
       // Save ref number for success display
       setRefNumber(newRefNum);
@@ -235,12 +272,30 @@ function QuotationFormContent() {
           </span>
         </div>
 
-        {/* WhatsApp redirect button */}
+        {/* Pre-filled WhatsApp button per requirement 3b */}
+        <div className="max-w-sm mx-auto">
+          <a
+            href={`https://wa.me/94723169847?text=Hi%2C%20my%20enquiry%20reference%20is%20${refNumber}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full"
+          >
+            <Button
+              variant="success"
+              className="bg-[#25D366] hover:bg-[#128C7E] flex items-center justify-center gap-2 w-full font-bold uppercase tracking-wider text-xs py-3"
+            >
+              <MessageSquare size={16} />
+              <span>{t('Confirm on WhatsApp', 'වට්ස්ඇප් හරහා තහවුරු කරන්න')}</span>
+            </Button>
+          </a>
+        </div>
+
+        {/* WhatsApp redirect button for sending photos & back home */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
             <Button
-              variant="success"
-              className="bg-[#25D366] hover:bg-[#128C7E] flex items-center justify-center gap-2 w-full sm:w-auto"
+              variant="outline"
+              className="border-green-500/30 text-green-400 hover:bg-green-500/10 flex items-center justify-center gap-2 w-full sm:w-auto"
             >
               <MessageSquare size={16} />
               <span>{t('Send Photos via WhatsApp', 'වට්ස්ඇප් හරහා පින්තූර එවන්න')}</span>
@@ -515,6 +570,18 @@ function QuotationFormContent() {
                 <span>English</span>
               </label>
             </div>
+          </div>
+
+          {/* Honeypot field (hidden with CSS, not type="hidden") */}
+          <div style={{ display: 'none' }} aria-hidden="true">
+            <input
+              type="text"
+              name="website"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              autoComplete="off"
+              tabIndex={-1}
+            />
           </div>
 
           {/* Submit Action */}

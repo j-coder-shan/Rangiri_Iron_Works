@@ -1,5 +1,4 @@
-// src/lib/seedData.ts
-import { Category, Item, Testimonial, SiteSettings, BlogPost } from '@/types';
+import { Category, Item, Testimonial, BlogPost } from '@/types';
 
 export const seedCategories: Category[] = [
   {

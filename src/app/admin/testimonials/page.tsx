@@ -1,7 +1,7 @@
 // src/app/admin/testimonials/page.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getTestimonials, saveTestimonial, deleteTestimonial } from '@/lib/db';
 import { Testimonial } from '@/types';
 import Button from '@/components/ui/Button';
@@ -9,7 +9,7 @@ import Card from '@/components/ui/Card';
 import Modal from '@/components/ui/Modal';
 import Skeleton from '@/components/ui/Skeleton';
 import { useToast } from '@/components/ui/Toast';
-import { PlusCircle, Edit, Trash2, Star, User, Save, X, Search, Check } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Star, Search } from 'lucide-react';
 
 export default function AdminTestimonialsPage() {
   const { success: showSuccess, error: showError } = useToast();
@@ -35,7 +35,7 @@ export default function AdminTestimonialsPage() {
   const [avatarInitials, setAvatarInitials] = useState('');
   const [isActive, setIsActive] = useState(true);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const data = await getTestimonials();
       setTestimonials(data);
@@ -44,11 +44,11 @@ export default function AdminTestimonialsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showError]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   const openAddModal = () => {
     setCurrentTestimonial(null);

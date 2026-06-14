@@ -1,16 +1,15 @@
 // src/app/admin/enquiries/page.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getEnquiries, deleteEnquiry } from '@/lib/db';
 import { Enquiry, EnquiryStatus } from '@/types';
 import Card from '@/components/ui/Card';
-import Badge from '@/components/ui/Badge';
 import Skeleton from '@/components/ui/Skeleton';
 import { useToast } from '@/components/ui/Toast';
 import { Search, Inbox, Eye, Trash2, Calendar, Phone, Mail, MessageSquare, AlertCircle } from 'lucide-react';
-import { formatDistanceToNow, format } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 
 export default function AdminEnquiriesPage() {
   const router = useRouter();
@@ -23,7 +22,7 @@ export default function AdminEnquiriesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusTab, setStatusTab] = useState<EnquiryStatus | 'all'>('all');
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const data = await getEnquiries();
       setEnquiries(data);
@@ -33,11 +32,11 @@ export default function AdminEnquiriesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showError]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   const handleDelete = async (id: string, ref: string) => {
     if (!window.confirm(`Are you sure you want to delete enquiry ${ref}?`)) {

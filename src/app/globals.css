@@ -16,11 +16,11 @@
   --color-ash-dark: #E8E6E1;
   --color-smoke: #FAFAF9;
   
-  /* Fonts mapped from CSS variables output by next/font/google */
-  --font-display: var(--font-oswald), sans-serif;
-  --font-body: var(--font-source-sans), sans-serif;
-  --font-sinhala: var(--font-noto-sinhala), sans-serif;
-  --font-mono: var(--font-jetbrains-mono), monospace;
+  /* Fonts mapped directly to Google Web Fonts loaded in layout.tsx */
+  --font-display: 'Oswald', sans-serif;
+  --font-body: 'Source Sans 3', sans-serif;
+  --font-sinhala: 'Noto Sans Sinhala', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
   
   /* Custom animation declarations */
   --animate-forge-glow: forge-glow 3s ease-in-out infinite;

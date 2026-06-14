@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getCategoryBySlug, getItemsByCategory } from '@/lib/db';
@@ -12,6 +13,7 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Skeleton from '@/components/ui/Skeleton';
 import ItemCodeSearch from '@/components/services/ItemCodeSearch';
+import { getOptimizedCloudinaryUrl } from '@/lib/cloudinary';
 import { ChevronRight, ArrowLeft, Eye, MessageSquare, Tag } from 'lucide-react';
 
 interface PageProps {
@@ -103,13 +105,14 @@ export default function CategoryPage({ params }: PageProps) {
           
           {/* Cover image */}
           <div className="w-full md:w-1/3 h-52 rounded-md overflow-hidden bg-iron relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={category.coverImage}
+            <Image
+              src={getOptimizedCloudinaryUrl(category.coverImage, 600)}
               alt={t(category.nameEn, category.nameSi)}
-              className="w-full h-full object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover"
             />
-            <div className="absolute inset-0 bg-black/20" />
+            <div className="absolute inset-0 bg-black/20 z-10" />
           </div>
 
           {/* Description details */}
@@ -157,15 +160,16 @@ export default function CategoryPage({ params }: PageProps) {
                 >
                   {/* Thumbnail Image */}
                   <div className="relative h-44 bg-iron overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={item.images[0] || 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80'}
+                    <Image
+                      src={getOptimizedCloudinaryUrl(item.images[0] || 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80', 600)}
                       alt={t(item.nameEn, item.nameSi)}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     
                     {/* Code overlay */}
-                    <div className="absolute top-4 left-4">
+                    <div className="absolute top-4 left-4 z-10">
                       <Badge variant="code">{item.code}</Badge>
                     </div>
                   </div>

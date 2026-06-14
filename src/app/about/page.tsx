@@ -2,11 +2,12 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { useRouter } from 'next/navigation';
-import { MapPin, ShieldCheck, Hammer, Users, Heart } from 'lucide-react';
+import { MapPin, ShieldCheck, Hammer, Users } from 'lucide-react';
 
 export default function AboutPage() {
   const { t } = useLanguage();
@@ -95,14 +96,15 @@ export default function AboutPage() {
 
           {/* Photo banner card (5 cols) */}
           <div className="lg:col-span-5 relative h-80 rounded-lg overflow-hidden border border-iron-light/30 shadow-2xl">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80"
               alt="Workshop worker welding steel"
-              className="w-full h-full object-cover"
+              fill
+              sizes="(max-width: 1024px) 100vw, 40vw"
+              className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            <div className="absolute bottom-6 left-6 text-smoke">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
+            <div className="absolute bottom-6 left-6 text-smoke z-10">
               <span className="text-[10px] font-bold text-spark tracking-wider uppercase font-display block mb-1">
                 {t('DAMBULLA WORKSHOP', 'දඹුල්ල වැඩපල')}
               </span>

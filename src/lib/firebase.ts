@@ -33,3 +33,4 @@ if (isFirebaseConfigured) {
 }
 
 export { app, db, auth, isFirebaseConfigured };
+export default app;

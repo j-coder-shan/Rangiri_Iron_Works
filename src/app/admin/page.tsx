@@ -3,9 +3,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { getCategories, getItems, getEnquiries } from '@/lib/db';
-import { Category, Item, Enquiry } from '@/types';
+import { Enquiry } from '@/types';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
@@ -17,7 +16,6 @@ import {
 import { format } from 'date-fns';
 
 export default function AdminDashboardPage() {
-  const { t } = useLanguage();
   const router = useRouter();
 
   // Metrics states

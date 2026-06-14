@@ -10,7 +10,6 @@ interface LogoProps {
 export default function Logo({ height = 40, variant = 'light', showTagline = false }: LogoProps) {
   // Sizing factors based on a base scale
   const scale = height / 40;
-  const width = 160 * scale;
 
   // Text color based on theme
   const textColor = variant === 'light' ? '#FAFAF9' : '#1A1A1A';

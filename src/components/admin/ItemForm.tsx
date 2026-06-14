@@ -8,7 +8,7 @@ import { generateItemCode } from '@/lib/codeGenerator';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import { useToast } from '@/components/ui/Toast';
-import { Save, X, Plus, Trash2, Image as ImageIcon, Eye, AlertCircle } from 'lucide-react';
+import { Save, X, Plus, Trash2, AlertCircle } from 'lucide-react';
 
 interface ItemFormProps {
   initialData?: Item | null;

@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getCategories } from '@/lib/db';
@@ -9,6 +10,7 @@ import { Category } from '@/types';
 import Card from '@/components/ui/Card';
 import Skeleton from '@/components/ui/Skeleton';
 import ItemCodeSearch from '@/components/services/ItemCodeSearch';
+import { getOptimizedCloudinaryUrl } from '@/lib/cloudinary';
 import * as Icons from 'lucide-react';
 
 export default function ServicesPage() {
@@ -98,13 +100,14 @@ export default function ServicesPage() {
               >
                 {/* Image block */}
                 <div className="w-full sm:w-2/5 h-44 sm:h-auto rounded-md overflow-hidden bg-iron flex-shrink-0 relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={cat.coverImage}
+                  <Image
+                    src={getOptimizedCloudinaryUrl(cat.coverImage, 400)}
                     alt={t(cat.nameEn, cat.nameSi)}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    fill
+                    sizes="(max-width: 640px) 100vw, 20vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-black/30 group-hover:bg-transparent transition-colors duration-300" />
+                  <div className="absolute inset-0 bg-black/30 group-hover:bg-transparent transition-colors duration-300 z-10" />
                 </div>
 
                 {/* Details block */}
